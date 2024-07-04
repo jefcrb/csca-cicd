@@ -15,14 +15,13 @@
 
             let url = 'http://192.168.1.118:5000/data?';
 
-            if (year) url += `year=${year}&`;
-            if (month) url += `month=${month}&`;
+            if (year) url += `jaar=${year}&`;
+            if (month) url += `maand=${month}&`;
             if (segment) url += `segment=${segment}&`;
-            if (energyType) url += `energytype=${energyType}&`;
-            if (supplier) url += `supplier=${supplier}&`;
-            if (type) url += `type=${type}&`;
+            if (energyType) url += `energietype=${energyType}&`;
+            if (supplier) url += `handelsnaam=${supplier}&`;
+            if (type) url += `vast_variabel_dynamisch=${type}&`;
 
-            // Remove the last '&' or '?' if no filters were added
             url = url.slice(-1) === '&' ? url.slice(0, -1) : url;
 
             window.open(url, '_blank');

@@ -2,3 +2,7 @@ flask
 pandas
 openpyxl
 python-dotenv
+mysql-connector-python
+sqlalchemy
+pymysql
+flask_sqlalchemy

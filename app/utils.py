@@ -48,7 +48,7 @@ def fetch_data():
 # Function to transform the data to the desired structure
 def transform_data(filtered_data):
     grouped_data = {}
-    for _, row in filtered_data.iterrows():
+    for row in filtered_data:
         productnaam_key = re.sub(r'[^a-z0-9_]', '', re.sub(r'\s+', '_', row['productnaam'].lower()))
         if productnaam_key not in grouped_data:
             grouped_data[productnaam_key] = {
@@ -56,5 +56,5 @@ def transform_data(filtered_data):
                 'supplier': row['handelsnaam'],
                 'prijsonderdelen': []
             }
-        grouped_data[productnaam_key]['prijsonderdelen'].append(row.to_dict())
+        grouped_data[productnaam_key]['prijsonderdelen'].append(row)
     return grouped_data

@@ -1,27 +1,30 @@
 from flask import request, jsonify, send_from_directory, current_app
 from .utils import transform_data
+from . import db
+from .models import Data
+from sqlalchemy import and_
 
 def init_routes(app):
     @app.route('/')
     def serve_index():
-        return send_from_directory('templates', 'index.html')
+        return send_from_directory('../templates', 'index.html')
 
     @app.route('/data', methods=['GET'])
     def get_data():
         filters = {
-            'jaar': request.args.get('year'),
-            'maand': request.args.get('month'),
+            'jaar': request.args.get('jaar'),
+            'maand': request.args.get('maand'),
             'segment': request.args.get('segment'),
-            'energietype': request.args.get('energytype'),
-            'handelsnaam': request.args.get('supplier'),
-            'vast_variabel_dynamisch': request.args.get('type')
+            'energietype': request.args.get('energietype')
         }
 
-        filtered_data = current_app.data.copy()
+        query = Data.query
         for key, value in filters.items():
             if value:
-                filtered_data = filtered_data[filtered_data[key].astype(str).str.lower() == value.lower()]
+                query = query.filter(getattr(Data, key).ilike(f'%{value}%'))
 
-        transformed_data = transform_data(filtered_data)
+        result = query.all()
+        result_dict = [row.to_dict() for row in result]
+        transformed_data = transform_data(result_dict)
 
         return jsonify(transformed_data)

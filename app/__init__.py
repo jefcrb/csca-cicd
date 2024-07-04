@@ -1,19 +1,21 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
-import pandas as pd
-from app.utils import normalize_column_name, fetch_data, rename_map
 
-# Load environment variables from .env file
 load_dotenv()
+
+db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # Load data on server startup
-    app.data = fetch_data()
+    db.init_app(app)
 
     with app.app_context():
         from . import routes  # Import routes
+        db.create_all()
 
     return app
