@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Filter</title>
+    <script>
+        function applyFilters() {
+            const year = document.getElementById('year').value;
+            const month = document.getElementById('month').value;
+            const segment = document.getElementById('segment').value;
+            const energyType = document.getElementById('energytype').value;
+            const supplier = document.getElementById('supplier').value;
+            const type = document.getElementById('type').value;
+
+            let url = 'http://192.168.1.118:5000/data?';
+
+            if (year) url += `year=${year}&`;
+            if (month) url += `month=${month}&`;
+            if (segment) url += `segment=${segment}&`;
+            if (energyType) url += `energytype=${energyType}&`;
+            if (supplier) url += `supplier=${supplier}&`;
+            if (type) url += `type=${type}&`;
+
+            // Remove the last '&' or '?' if no filters were added
+            url = url.slice(-1) === '&' ? url.slice(0, -1) : url;
+
+            window.open(url, '_blank');
+        }
+    </script>
+</head>
+<body>
+    <h1>Set Filters</h1>
+    <form onsubmit="event.preventDefault(); applyFilters();">
+        <label for="year">Year:</label>
+        <select id="year" name="year">
+            <option value="">Select Year</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+        </select><br><br>
+
+        <label for="month">Month:</label>
+        <select id="month" name="month">
+            <option value="">Select Month</option>
+            <option value="apr">April</option>
+            <option value="mei">May</option>
+            <option value="jun">June</option>
+        </select><br><br>
+
+        <label for="segment">Segment:</label>
+        <select id="segment" name="segment">
+            <option value="">Select Segment</option>
+            <option value="Onderneming">Onderneming</option>
+            <option value="Woning">Woning</option>
+        </select><br><br>
+
+        <label for="energytype">Energy Type:</label>
+        <select id="energytype" name="energytype">
+            <option value="">Select Energy Type</option>
+            <option value="Elektriciteit">Elektriciteit</option>
+            <option value="Gas">Gas</option>
+        </select><br><br>
+
+        <label for="supplier">Supplier:</label>
+        <input type="text" id="supplier" name="supplier"><br><br>
+
+        <label for="type">Type:</label>
+        <select id="type" name="type">
+            <option value="">Select Type</option>
+            <option value="Vast">Vast</option>
+            <option value="Dynamisch">Dynamisch</option>
+            <option value="Variabel">Variabel</option>
+        </select><br><br>
+
+        <button type="submit">Apply Filters</button>
+    </form>
+</body>
+</html>
