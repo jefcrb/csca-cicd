@@ -101,24 +101,28 @@ def set_prices(data):
 
 
 def calculate_price(data, type, time=None):
+    price = 0
     if type == "var":
         if data["prijs"]:
-            return data["prijs"]
+            price = data["prijs"]
         
         elif data["a"] and data["waarde_x_laatst_gekende"]:
-            return float(data["a"]) * float(data["waarde_x_laatst_gekende"]) + data["d"]
+            price = float(data["a"]) * float(data["waarde_x_laatst_gekende"]) + data["d"]
         
     if type == "vast":
-        return data["prijs"]
+        price = data["prijs"]
     
     if type == "dyn":
         if data["prijs"]:
-            return data["prijs"]
+            price = data["prijs"]
         
         if data["a"] and data["d"]:
             entsoe_data = get_entsoe_data()
             for row in entsoe_data:
                 if row["start"] == time:
-                    return float(data["a"]) * float(row["price"]) + data["d"]
+                    price = float(data["a"]) * float(row["price"]) + data["d"]
+    
+    if data["contracttype"] == "Afname" and data["energietype"] == "Elektriciteit":
+        price += data["groene_stroom"] + data["wkk"]
 
-    return 0
+    return price
