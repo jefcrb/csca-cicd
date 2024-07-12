@@ -63,6 +63,38 @@ data = data.where(pd.notnull(data), None)
 # Print the reordered DataFrame for debugging
 print("Reordered Data:\n", data.head())
 
+# Separate rows with "WKK" or "groene stroom" in 'prijsonderdeel'
+wkk_rows = data[data['prijsonderdeel'].str.contains("WKK", na=False)]
+groene_stroom_rows = data[data['prijsonderdeel'].str.contains("groene stroom", na=False)]
+
+# Remove "WKK" and "groene stroom" rows from the original data
+data = data[~data['prijsonderdeel'].str.contains("WKK|groene stroom", na=False)]
+
+# Create columns for wkk and groene_stroom
+data['wkk'] = None
+data['groene_stroom'] = None
+
+# Aggregate wkk and groene stroom values
+for _, row in wkk_rows.iterrows():
+    match = (data['segment'] == row['segment']) & \
+            (data['energietype'] == row['energietype']) & \
+            (data['contracttype'] == row['contracttype']) & \
+            (data['handelsnaam'] == row['handelsnaam']) & \
+            (data['productnaam'] == row['productnaam']) & \
+            (data['jaar'] == row['jaar']) & \
+            (data['maand'] == row['maand'])
+    data.loc[match, 'wkk'] = row['prijs']
+
+for _, row in groene_stroom_rows.iterrows():
+    match = (data['segment'] == row['segment']) & \
+            (data['energietype'] == row['energietype']) & \
+            (data['contracttype'] == row['contracttype']) & \
+            (data['handelsnaam'] == row['handelsnaam']) & \
+            (data['productnaam'] == row['productnaam']) & \
+            (data['jaar'] == row['jaar']) & \
+            (data['maand'] == row['maand'])
+    data.loc[match, 'groene_stroom'] = row['prijs']
+
 # Function to handle row conversion
 def convert_row(row):
     # Convert row to list and replace any NaN with None
@@ -98,6 +130,8 @@ CREATE TABLE IF NOT EXISTS data (
     c FLOAT,
     d FLOAT,
     prijs FLOAT,
+    wkk FLOAT,
+    groene_stroom FLOAT,
     UNIQUE (jaar, maand, handelsnaam, productnaam, prijsonderdeel)
 );
 '''
@@ -107,8 +141,8 @@ cursor.execute(create_table_query)
 insert_query = '''
 INSERT INTO data (jaar, maand, handelsnaam, productnaam, segment, energietype, contracttype, vast_variabel_dynamisch,
     prijsonderdeel, indexatieparameter_x, indexatieparameter_y, beschrijving_x, beschrijving_y,
-    waarde_x_vreg, waarde_y_vreg, waarde_x_laatst_gekende, waarde_y_laatst_gekende, a, b, c, d, prijs)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    waarde_x_vreg, waarde_y_vreg, waarde_x_laatst_gekende, waarde_y_laatst_gekende, a, b, c, d, prijs, wkk, groene_stroom)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 ON DUPLICATE KEY UPDATE
     segment=VALUES(segment),
     energietype=VALUES(energietype),
@@ -126,7 +160,9 @@ ON DUPLICATE KEY UPDATE
     b=VALUES(b),
     c=VALUES(c),
     d=VALUES(d),
-    prijs=VALUES(prijs);
+    prijs=VALUES(prijs),
+    wkk=VALUES(wkk),
+    groene_stroom=VALUES(groene_stroom);
 '''
 
 # Insert rows and log success or error

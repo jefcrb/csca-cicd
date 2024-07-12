@@ -18,6 +18,8 @@ services:
     environment:
       - SRC_URL=https://www.vreg.be/sites/default/files/statistieken/v-testr_open_data_-_excl._btw.xlsx
       - DATABASE_URI=mysql+pymysql://your_db_user:your_db_password@db/your_db_name
+      - ENTSOE_API_URL=${ENTSOE_API_URL}
+      - ENTSOE_API_KEY=${ENTSOE_API_KEY}
     ports:
       - "5000:5000"
     depends_on:
@@ -25,10 +27,12 @@ services:
 
   scripts:
     build: .
-    command: python scripts/data_to_mysql.py
+    working_dir: /app
     environment:
       - SRC_URL=https://www.vreg.be/sites/default/files/statistieken/v-testr_open_data_-_excl._btw.xlsx
       - DATABASE_URI=mysql+pymysql://your_db_user:your_db_password@db/your_db_name
+      - PYTHONPATH=/app
+    command: python scripts/data_to_mysql.py
     depends_on:
       - db
 

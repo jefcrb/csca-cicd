@@ -24,6 +24,8 @@ class Data(db.Model):
     c = db.Column(db.Float)
     d = db.Column(db.Float)
     prijs = db.Column(db.Float)
+    wkk = db.Column(db.Float)
+    groene_stroom = db.Column(db.Float)
 
     __table_args__ = (
         db.UniqueConstraint('jaar', 'maand', 'handelsnaam', 'productnaam', 'prijsonderdeel', name='_data_uc'),
@@ -52,5 +54,7 @@ class Data(db.Model):
             'b': self.b,
             'c': self.c,
             'd': self.d,
-            'prijs': self.prijs
+            'prijs': self.prijs,
+            'wkk': self.wkk,
+            'groene_stroom': self.groene_stroom
         }

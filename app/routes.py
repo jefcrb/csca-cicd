@@ -1,13 +1,14 @@
-from flask import request, jsonify, send_from_directory, current_app
+from flask import request, jsonify, send_from_directory
 from .utils import transform_data
 from . import db
 from .models import Data
+from .entsoe import get_entsoe_data
 from sqlalchemy import and_
 
 def init_routes(app):
     @app.route('/')
     def serve_index():
-        return send_from_directory('../templates', 'index.html')
+        return send_from_directory('templates', 'index.html')
 
     @app.route('/data', methods=['GET'])
     def get_data():
@@ -28,3 +29,8 @@ def init_routes(app):
         transformed_data = transform_data(result_dict)
 
         return jsonify(transformed_data)
+
+    @app.route('/entsoe_data', methods=['GET'])
+    def get_entsoe():
+        data = get_entsoe_data()
+        return jsonify(data)
