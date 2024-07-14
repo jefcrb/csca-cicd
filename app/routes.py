@@ -29,8 +29,3 @@ def init_routes(app):
         transformed_data = transform_data(result_dict)
 
         return jsonify(transformed_data)
-
-    @app.route('/entsoe_data', methods=['GET'])
-    def get_entsoe():
-        data = get_entsoe_data()
-        return jsonify(data)
