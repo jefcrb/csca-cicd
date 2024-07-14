@@ -1,16 +1,31 @@
-from flask import request, jsonify, send_from_directory
+from flask import request, jsonify, send_from_directory, abort
+from functools import wraps
 from .utils import transform_data
 from . import db
 from .models import Data
 from .entsoe import get_entsoe_data
-from sqlalchemy import and_
+import os
+
+
+SECURITY_TOKEN = os.getenv('SECURE_TOKEN')
+
+def token_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token or token != SECURITY_TOKEN:
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
 
 def init_routes(app):
     @app.route('/')
+    @token_required
     def serve_index():
         return send_from_directory('../templates', 'index.html')
 
-    @app.route('/data', methods=['GET'])
+    @app.route('/contracten', methods=['GET'])
+    @token_required
     def get_data():
         filters = {
             'jaar': request.args.get('jaar'),

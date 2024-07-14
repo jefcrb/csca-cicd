@@ -6,9 +6,6 @@ from datetime import datetime, timedelta
 import pytz
 
 
-load_dotenv(dotenv_path='.env')
-load_dotenv(dotenv_path='secret.env')
-
 ENTSOE_API_URL = os.getenv('ENTSOE_API_URL')
 ENTSOE_API_KEY = os.getenv('ENTSOE_API_KEY')
 LOCAL_TIMEZONE = pytz.timezone('Europe/Brussels')

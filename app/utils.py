@@ -51,13 +51,14 @@ def fetch_data():
         print("SRC_URL is not set in the .env file.")
         return pd.DataFrame()
 
-# Function to transform the data to the desired structure
-def transform_data(filtered_data):
+
+def transform_data(filtered_data, show_prices = False):
     grouped_data = {}
     for row in filtered_data:
         productnaam_key = re.sub(r'[^a-z0-9_]', '', re.sub(r'\s+', '_', row['productnaam'].lower()))
 
-        row["prices"] = set_prices(row)
+        if show_prices:
+            row["prices"] = set_prices(row)
 
         if productnaam_key not in grouped_data:
             grouped_data[productnaam_key] = {
