@@ -60,19 +60,21 @@ data = data[list(columns_with_defaults.keys())]
 # Convert NaN to None and ensure correct data types
 data = data.where(pd.notnull(data), None)
 
-# Print the reordered DataFrame for debugging
-print("Reordered Data:\n", data.head())
-
-# Separate rows with "WKK" or "groene stroom" in 'prijsonderdeel'
+# Separate rows with "WKK", "groene stroom", and "Vaste vergoeding" in 'prijsonderdeel'
 wkk_rows = data[data['prijsonderdeel'].str.contains("WKK", na=False)]
 groene_stroom_rows = data[data['prijsonderdeel'].str.contains("groene stroom", na=False)]
+vaste_vergoeding_rows = data[data['prijsonderdeel'].str.contains("Vaste vergoeding", na=False)]
 
-# Remove "WKK" and "groene stroom" rows from the original data
-data = data[~data['prijsonderdeel'].str.contains("WKK|groene stroom", na=False)]
+# Remove "WKK", "groene stroom", and "Vaste vergoeding" rows from the original data
+data = data[~data['prijsonderdeel'].str.contains("WKK|groene stroom|Vaste vergoeding", na=False)]
 
-# Create columns for wkk and groene_stroom
+# Create columns for wkk, groene_stroom, and various vaste_vergoeding columns
 data['wkk'] = None
 data['groene_stroom'] = None
+data['vaste_vergoeding'] = None
+data['vaste_vergoeding_enkelvoudige_meter'] = None
+data['vaste_vergoeding_tweevoudige_meter'] = None
+data['vaste_vergoeding_uitsluitend_nachttarief'] = None
 
 # Aggregate wkk and groene stroom values
 for _, row in wkk_rows.iterrows():
@@ -94,6 +96,20 @@ for _, row in groene_stroom_rows.iterrows():
             (data['jaar'] == row['jaar']) & \
             (data['maand'] == row['maand'])
     data.loc[match, 'groene_stroom'] = row['prijs']
+
+# Aggregate vaste_vergoeding values
+for _, row in vaste_vergoeding_rows.iterrows():
+    col_name = row['prijsonderdeel'].lower().replace(' ', '_').replace('(', '').replace(')', '').replace('€', '').replace('__', '_').strip()
+    if col_name not in data.columns:
+        continue
+    match = (data['segment'] == row['segment']) & \
+            (data['energietype'] == row['energietype']) & \
+            (data['contracttype'] == row['contracttype']) & \
+            (data['handelsnaam'] == row['handelsnaam']) & \
+            (data['productnaam'] == row['productnaam']) & \
+            (data['jaar'] == row['jaar']) & \
+            (data['maand'] == row['maand'])
+    data.loc[match, col_name] = row['prijs']
 
 # Function to handle row conversion
 def convert_row(row):
@@ -132,6 +148,10 @@ CREATE TABLE IF NOT EXISTS data (
     prijs FLOAT,
     wkk FLOAT,
     groene_stroom FLOAT,
+    vaste_vergoeding FLOAT,
+    vaste_vergoeding_enkelvoudige_meter FLOAT,
+    vaste_vergoeding_tweevoudige_meter FLOAT,
+    vaste_vergoeding_uitsluitend_nachttarief FLOAT,
     UNIQUE (jaar, maand, handelsnaam, productnaam, prijsonderdeel)
 );
 '''
@@ -141,8 +161,9 @@ cursor.execute(create_table_query)
 insert_query = '''
 INSERT INTO data (jaar, maand, handelsnaam, productnaam, segment, energietype, contracttype, vast_variabel_dynamisch,
     prijsonderdeel, indexatieparameter_x, indexatieparameter_y, beschrijving_x, beschrijving_y,
-    waarde_x_vreg, waarde_y_vreg, waarde_x_laatst_gekende, waarde_y_laatst_gekende, a, b, c, d, prijs, wkk, groene_stroom)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    waarde_x_vreg, waarde_y_vreg, waarde_x_laatst_gekende, waarde_y_laatst_gekende, a, b, c, d, prijs, wkk, groene_stroom, 
+    vaste_vergoeding, vaste_vergoeding_enkelvoudige_meter, vaste_vergoeding_tweevoudige_meter, vaste_vergoeding_uitsluitend_nachttarief)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 ON DUPLICATE KEY UPDATE
     segment=VALUES(segment),
     energietype=VALUES(energietype),
@@ -162,7 +183,11 @@ ON DUPLICATE KEY UPDATE
     d=VALUES(d),
     prijs=VALUES(prijs),
     wkk=VALUES(wkk),
-    groene_stroom=VALUES(groene_stroom);
+    groene_stroom=VALUES(groene_stroom),
+    vaste_vergoeding=VALUES(vaste_vergoeding),
+    vaste_vergoeding_enkelvoudige_meter=VALUES(vaste_vergoeding_enkelvoudige_meter),
+    vaste_vergoeding_tweevoudige_meter=VALUES(vaste_vergoeding_tweevoudige_meter),
+    vaste_vergoeding_uitsluitend_nachttarief=VALUES(vaste_vergoeding_uitsluitend_nachttarief);
 '''
 
 # Insert rows and log success or error

@@ -26,6 +26,10 @@ class Data(db.Model):
     prijs = db.Column(db.Float)
     wkk = db.Column(db.Float)
     groene_stroom = db.Column(db.Float)
+    vaste_vergoeding = db.Column(db.Float)
+    vaste_vergoeding_enkelvoudige_meter = db.Column(db.Float)
+    vaste_vergoeding_tweevoudige_meter = db.Column(db.Float)
+    vaste_vergoeding_uitsluitend_nachttarief = db.Column(db.Float)
 
     __table_args__ = (
         db.UniqueConstraint('jaar', 'maand', 'handelsnaam', 'productnaam', 'prijsonderdeel', name='_data_uc'),
@@ -56,5 +60,9 @@ class Data(db.Model):
             'd': self.d,
             'prijs': self.prijs,
             'wkk': self.wkk,
-            'groene_stroom': self.groene_stroom
+            'groene_stroom': self.groene_stroom,
+            'vaste_vergoeding': self.vaste_vergoeding,
+            'vaste_vergoeding_enkelvoudige_meter': self.vaste_vergoeding_enkelvoudige_meter,
+            'vaste_vergoeding_tweevoudige_meter': self.vaste_vergoeding_tweevoudige_meter,
+            'vaste_vergoeding_uitsluitend_nachttarief': self.vaste_vergoeding_uitsluitend_nachttarief
         }

@@ -7,6 +7,11 @@ from datetime import datetime, timedelta, timezone
 from .entsoe import get_entsoe_data
 
 
+BIJZ_ACCIJNS = 1.4121
+BIJDRAGE_ENERGIE = 0.1926
+AANSLUITINGSVERGOEDING = 0.075
+AFNAME_REGIO = 4.33
+
 def normalize_column_name(name, rename_map):
     name = name.lower()  # Convert to lowercase
     name = re.sub(r'[\s\/]', '_', name)  # Replace spaces and slashes with underscores
@@ -65,9 +70,9 @@ def transform_data(filtered_data):
 
 
 def set_prices(data):
-    today = datetime.utcnow().strftime('%Y%m%d0000')
-    tomorrow = (datetime.utcnow() + timedelta(days=1)).strftime('%Y%m%d0000')
-    specific_date = datetime(2024, 7, 6, tzinfo=timezone(timedelta(hours=2)))
+    today = datetime.now().strftime('%Y%m%d0000')
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y%m%d0000')
+    specific_date = datetime.now().replace(tzinfo=timezone(timedelta(hours=2)))
 
     prices = {}
     prices["prices_today"] = []
@@ -121,8 +126,10 @@ def calculate_price(data, type, time=None):
             for row in entsoe_data:
                 if row["start"] == time:
                     price = float(data["a"]) * float(row["price"]) + data["d"]
+                    # print(f'{data["productnaam"]} {data["contracttype"]}: {float(data["a"])} * {float(row["price"])} + {data["d"]} = {price}')
     
     if data["contracttype"] == "Afname" and data["energietype"] == "Elektriciteit":
-        price += data["groene_stroom"] + data["wkk"]
+        price *= 1.06
+        price += data["groene_stroom"] + data["wkk"] + BIJZ_ACCIJNS + BIJDRAGE_ENERGIE + AANSLUITINGSVERGOEDING + AFNAME_REGIO
 
     return price
