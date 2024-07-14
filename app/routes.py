@@ -6,7 +6,6 @@ from .models import Data
 from .entsoe import get_entsoe_data
 import os
 
-
 SECURITY_TOKEN = os.getenv('SECURE_TOKEN')
 
 def token_required(f):
@@ -24,14 +23,15 @@ def init_routes(app):
     def serve_index():
         return send_from_directory('../templates', 'index.html')
 
-    @app.route('/contracten', methods=['GET'])
+    @app.route('/data', methods=['GET'])
     @token_required
     def get_data():
         filters = {
             'jaar': request.args.get('jaar'),
             'maand': request.args.get('maand'),
             'segment': request.args.get('segment'),
-            'energietype': request.args.get('energietype')
+            'energietype': request.args.get('energietype'),
+            'handelsnaam': request.args.get('handelsnaam')
         }
 
         query = Data.query
