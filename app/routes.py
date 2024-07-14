@@ -8,7 +8,7 @@ from sqlalchemy import and_
 def init_routes(app):
     @app.route('/')
     def serve_index():
-        return send_from_directory('templates', 'index.html')
+        return send_from_directory('../templates', 'index.html')
 
     @app.route('/data', methods=['GET'])
     def get_data():
