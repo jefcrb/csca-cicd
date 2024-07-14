@@ -76,31 +76,82 @@ def set_prices(data):
 
     prices = {}
     prices["prices_today"] = []
+    prices["prices_tomorrow"] = []
+    prices["prices_next24h"] = []
 
     if data["vast_variabel_dynamisch"] == "Dynamisch":
         for i in range(24):
             specific_time = specific_date.replace(hour=i, minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:00:00%z')
+            prices_today = calculate_price(data, "dyn", time=specific_time)
             prices["prices_today"].append({
                 "time": specific_time,
-                "price": calculate_price(data, "dyn", time=specific_time)
+                "price": prices_today
+                })
+
+            specific_time_tomorrow = (specific_date + timedelta(days=1)).replace(hour=i, minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:00:00%z')
+            prices_tomorrow = calculate_price(data, "dyn", time=specific_time_tomorrow) if datetime.now().hour >= 12 else 0
+            prices["prices_tomorrow"].append({
+                "time": specific_time_tomorrow,
+                "price": prices_tomorrow
                 })
 
     if data["vast_variabel_dynamisch"] == "Variabel":
         for i in range(24):
             specific_time = specific_date.replace(hour=i, minute=0, second=0, microsecond=0)
+            prices_today = calculate_price(data, "var")
             prices["prices_today"].append({
                 "time": specific_time.strftime('%Y-%m-%dT%H:00:00%z'),
-                "price": calculate_price(data, "var")
+                "price": prices_today
+                })
+
+            specific_time_tomorrow = (specific_date + timedelta(days=1)).replace(hour=i, minute=0, second=0, microsecond=0)
+            prices_tomorrow = calculate_price(data, "var") if datetime.now().hour >= 12 else 0
+            prices["prices_tomorrow"].append({
+                "time": specific_time_tomorrow.strftime('%Y-%m-%dT%H:00:00%z'),
+                "price": prices_tomorrow
                 })
 
     if data["vast_variabel_dynamisch"] == "Vast":
         for i in range(24):
             specific_time = specific_date.replace(hour=i, minute=0, second=0, microsecond=0)
+            prices_today = calculate_price(data, "vast")
             prices["prices_today"].append({
                 "time": specific_time.strftime('%Y-%m-%dT%H:00:00%z'),
-                "price": calculate_price(data, "vast")
+                "price": prices_today
+                })
+
+            specific_time_tomorrow = (specific_date + timedelta(days=1)).replace(hour=i, minute=0, second=0, microsecond=0)
+            prices_tomorrow = calculate_price(data, "vast") if datetime.now().hour >= 12 else 0
+            prices["prices_tomorrow"].append({
+                "time": specific_time_tomorrow.strftime('%Y-%m-%dT%H:00:00%z'),
+                "price": prices_tomorrow
                 })
     
+    current_hour = specific_date.hour
+
+    for i in range(24):
+        if i + current_hour < 24:
+            specific_time_next24h = specific_date.replace(hour=(i + current_hour) % 24, minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:00:00%z')
+            prices_next24h = prices["prices_today"][(i + current_hour) % 24]["price"]
+        else:
+            specific_time_next24h = (specific_date + timedelta(days=1)).replace(hour=(i + current_hour) % 24, minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:00:00%z')
+            prices_next24h = prices["prices_tomorrow"][(i + current_hour) % 24]["price"]
+        prices["prices_next24h"].append({
+            "time": specific_time_next24h,
+            "price": prices_next24h
+        })
+
+    prices["today_min"] = min(p["price"] for p in prices["prices_today"])
+    prices["today_max"] = max(p["price"] for p in prices["prices_today"])
+    prices["today_avg"] = sum(p["price"] for p in prices["prices_today"]) / len(prices["prices_today"])
+
+    prices["tomorrow_min"] = min(p["price"] for p in prices["prices_tomorrow"])
+    prices["tomorrow_max"] = max(p["price"] for p in prices["prices_tomorrow"])
+    prices["tomorrow_avg"] = sum(p["price"] for p in prices["prices_tomorrow"]) / len(prices["prices_tomorrow"])
+
+    prices["next24h_min"] = min(p["price"] for p in prices["prices_next24h"])
+    prices["next24h_max"] = max(p["price"] for p in prices["prices_next24h"])
+    prices["next24h_avg"] = sum(p["price"] for p in prices["prices_next24h"]) / len(prices["prices_next24h"])
 
     return prices
 
@@ -132,4 +183,5 @@ def calculate_price(data, type, time=None):
         price *= 1.06
         price += data["groene_stroom"] + data["wkk"] + BIJZ_ACCIJNS + BIJDRAGE_ENERGIE + AANSLUITINGSVERGOEDING + AFNAME_REGIO
 
+    price = round(price, 6)
     return price
