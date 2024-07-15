@@ -31,8 +31,13 @@ def init_routes(app):
             'maand': request.args.get('maand'),
             'segment': request.args.get('segment'),
             'energietype': request.args.get('energietype'),
-            'handelsnaam': request.args.get('handelsnaam')
+            'handelsnaam': request.args.get('handelsnaam'),
+            'vast_variabel_dynamisch': request.args.get('vast_variabel_dynamisch')
         }
+
+        show_prices = request.args.get('show_prices')
+        top = request.args.get('top', type=int)
+        bottom = request.args.get('bottom', type=int)
 
         query = Data.query
         for key, value in filters.items():
@@ -41,6 +46,30 @@ def init_routes(app):
 
         result = query.all()
         result_dict = [row.to_dict() for row in result]
-        transformed_data = transform_data(result_dict)
+        transformed_data = transform_data(result_dict, show_prices)
 
-        return jsonify(transformed_data)
+        all_entries = []
+        for key, value in transformed_data.items():
+            for entry in value['prijsonderdelen']:
+                entry['type'] = key
+                all_entries.append(entry)
+
+        if top is not None:
+            all_entries.sort(key=lambda x: x['prices']['today_avg'], reverse=True)
+            all_entries = all_entries[:top]
+
+        if bottom is not None:
+            all_entries.sort(key=lambda x: x['prices']['today_avg'])
+            all_entries = all_entries[:bottom]
+
+        filtered_data = {}
+        for entry in all_entries:
+            type_key = entry.pop('type')
+            if type_key not in filtered_data:
+                filtered_data[type_key] = {
+                    'name': transformed_data[type_key]['name'],
+                    'prijsonderdelen': []
+                }
+            filtered_data[type_key]['prijsonderdelen'].append(entry)
+
+        return jsonify(filtered_data)
