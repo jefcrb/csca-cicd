@@ -99,7 +99,7 @@ for _, row in groene_stroom_rows.iterrows():
 
 # Aggregate vaste_vergoeding values
 for _, row in vaste_vergoeding_rows.iterrows():
-    col_name = row['prijsonderdeel'].lower().replace(' ', '_').replace('(', '').replace(')', '').replace('€', '').replace('__', '_').strip()
+    col_name = row['prijsonderdeel'].lower().replace(' ', '_').replace('_(', '').replace(')', '').replace('€', '').replace('__', '_').strip()
     if col_name not in data.columns:
         continue
     match = (data['segment'] == row['segment']) & \
