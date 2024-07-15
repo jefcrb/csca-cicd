@@ -19,12 +19,12 @@ def token_required(f):
 
 def init_routes(app):
     @app.route('/')
-    @token_required
+    # @token_required
     def serve_index():
         return send_from_directory('../templates', 'index.html')
 
     @app.route('/data', methods=['GET'])
-    @token_required
+    # @token_required
     def get_data():
         filters = {
             'jaar': request.args.get('jaar'),
