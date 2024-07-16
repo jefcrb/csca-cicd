@@ -5,12 +5,13 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 
 from .entsoe import get_entsoe_data
+from .netkosten import get_cost_from_zip
 
 
 BIJZ_ACCIJNS = 1.4121
 BIJDRAGE_ENERGIE = 0.1926
 AANSLUITINGSVERGOEDING = 0.075
-AFNAME_REGIO = 4.33
+afname_regio = 0
 
 def normalize_column_name(name, rename_map):
     name = name.lower()  # Convert to lowercase
@@ -52,7 +53,10 @@ def fetch_data():
         return pd.DataFrame()
 
 
-def transform_data(filtered_data, show_prices = False):
+def transform_data(filtered_data, show_prices = False, afname_regio_val = None):
+    global afname_regio
+    afname_regio = afname_regio_val
+
     grouped_data = {}
     for row in filtered_data:
         productnaam_key = re.sub(r'[^a-z0-9_]', '', re.sub(r'\s+', '_', row['productnaam'].lower()))
@@ -71,8 +75,6 @@ def transform_data(filtered_data, show_prices = False):
 
 
 def set_prices(data):
-    today = datetime.now().strftime('%Y%m%d0000')
-    tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y%m%d0000')
     specific_date = datetime.now().replace(tzinfo=timezone(timedelta(hours=2)))
 
     prices = {}
@@ -158,6 +160,7 @@ def set_prices(data):
 
 
 def calculate_price(data, type, time=None):
+    global afname_regio
     price = 0
     if type == "var":
         if data["prijs"]:
@@ -182,7 +185,7 @@ def calculate_price(data, type, time=None):
     
     if data["contracttype"] == "Afname" and data["energietype"] == "Elektriciteit":
         price *= 1.06
-        price += data["groene_stroom"] + data["wkk"] + BIJZ_ACCIJNS + BIJDRAGE_ENERGIE + AANSLUITINGSVERGOEDING + AFNAME_REGIO
+        price += data["groene_stroom"] + data["wkk"] + BIJZ_ACCIJNS + BIJDRAGE_ENERGIE + AANSLUITINGSVERGOEDING + afname_regio
 
     price = round(price, 6)
     return price

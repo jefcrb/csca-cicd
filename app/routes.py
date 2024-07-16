@@ -4,6 +4,7 @@ from .utils import transform_data
 from . import db
 from .models import Data
 from .entsoe import get_entsoe_data
+from .netkosten import get_cost_from_zip
 import os
 
 SECURITY_TOKEN = os.getenv('SECURE_TOKEN')
@@ -38,6 +39,9 @@ def init_routes(app):
         show_prices = request.args.get('show_prices')
         top = request.args.get('top', type=int)
         bottom = request.args.get('bottom', type=int)
+        postcode = request.args.get('postcode')
+
+        afname_regio = get_cost_from_zip(postcode)
 
         query = Data.query
         for key, value in filters.items():
@@ -46,7 +50,7 @@ def init_routes(app):
 
         result = query.all()
         result_dict = [row.to_dict() for row in result]
-        transformed_data = transform_data(result_dict, show_prices)
+        transformed_data = transform_data(result_dict, show_prices=show_prices, afname_regio_val=afname_regio)
 
         all_entries = []
         for key, value in transformed_data.items():

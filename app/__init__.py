@@ -5,6 +5,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.base import SchedulerNotRunningError
 import os
 from .entsoe import update_entsoe_data
+from .netkosten import fetch_region_prices
 
 load_dotenv()
 
@@ -18,16 +19,16 @@ def create_app():
     db.init_app(app)
 
     with app.app_context():
-        from . import routes  # Import routes
+        from . import routes
         db.create_all()
-        update_entsoe_data()  # Initialize data on startup
+        update_entsoe_data()
+        fetch_region_prices()
 
-    # Schedule the ENTSO-E data update
     scheduler = BackgroundScheduler()
     scheduler.add_job(update_entsoe_data, 'interval', hours=1)
+    scheduler.add_job(fetch_region_prices, 'interval', days=1)
     scheduler.start()
 
-    # Shut down the scheduler when exiting the app
     @app.teardown_appcontext
     def shutdown_session(exception=None):
         try:
