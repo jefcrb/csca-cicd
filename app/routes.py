@@ -33,6 +33,7 @@ def init_routes(app):
             'segment': request.args.get('segment'),
             'energietype': request.args.get('energietype'),
             'handelsnaam': request.args.get('handelsnaam'),
+            'contracttype': request.args.get('contracttype'),
             'vast_variabel_dynamisch': request.args.get('vast_variabel_dynamisch')
         }
 
