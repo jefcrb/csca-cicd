@@ -14,7 +14,6 @@ db_config = {
     'database': os.getenv('DB_NAME')
 }
 
-# Function to fetch and preprocess data
 def fetch_data():
     src_url = os.getenv('SRC_URL')
     if src_url:
@@ -30,6 +29,9 @@ def fetch_data():
             # Append the data from the third sheet to the second sheet
             combined_data = pd.concat([data_sheet_2, data_sheet_3], ignore_index=True)
 
+            # Drop rows where 'Jaar' value is empty
+            combined_data = combined_data.dropna(subset=['jaar'])
+
             return combined_data
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -40,6 +42,7 @@ def fetch_data():
 
 # Fetch data
 data = fetch_data()
+print(data)
 
 # Define possible columns and their default values
 columns_with_defaults = {
@@ -55,7 +58,10 @@ for col in columns_with_defaults:
     if col not in data.columns:
         data[col] = columns_with_defaults[col]
 
+print(data)
+
 data = data[list(columns_with_defaults.keys())]
+print(data)
 
 # Convert NaN to None and ensure correct data types
 data = data.where(pd.notnull(data), None)
@@ -124,8 +130,8 @@ cursor = conn.cursor()
 create_table_query = '''
 CREATE TABLE IF NOT EXISTS data (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    jaar VARCHAR(4),
-    maand VARCHAR(3),
+    jaar VARCHAR(10),
+    maand VARCHAR(12),
     handelsnaam VARCHAR(255),
     productnaam VARCHAR(255),
     segment VARCHAR(255),

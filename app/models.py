@@ -2,7 +2,7 @@ from . import db
 
 class Data(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    jaar = db.Column(db.String(4))
+    jaar = db.Column(db.String(6))
     maand = db.Column(db.String(3))
     handelsnaam = db.Column(db.String(255))
     productnaam = db.Column(db.String(255))
