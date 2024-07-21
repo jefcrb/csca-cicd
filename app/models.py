@@ -37,6 +37,7 @@ class Data(db.Model):
 
     def to_dict(self):
         return {
+            'id': self.id,
             'jaar': self.jaar,
             'maand': self.maand,
             'handelsnaam': self.handelsnaam,
