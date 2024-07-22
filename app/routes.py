@@ -34,7 +34,9 @@ def init_routes(app):
             'energietype': request.args.get('energietype'),
             'handelsnaam': request.args.get('handelsnaam'),
             'contracttype': request.args.get('contracttype'),
-            'vast_variabel_dynamisch': request.args.get('vast_variabel_dynamisch')
+            'vast_variabel_dynamisch': request.args.get('vast_variabel_dynamisch'),
+            'prijsonderdeel': request.args.get('prijsonderdeel'),
+            'id': request.args.get('id')
         }
 
         show_prices = request.args.get('show_prices')
@@ -47,7 +49,10 @@ def init_routes(app):
         query = Data.query
         for key, value in filters.items():
             if value:
-                query = query.filter(getattr(Data, key).ilike(f'%{value}%'))
+                if key == 'id':
+                    query = query.filter(getattr(Data, key) == value)
+                else:
+                    query = query.filter(getattr(Data, key).ilike(f'%{value}%'))
 
         result = query.all()
         result_dict = [row.to_dict() for row in result]
