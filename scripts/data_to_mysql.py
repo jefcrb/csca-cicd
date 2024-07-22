@@ -6,7 +6,7 @@ from app.utils import normalize_column_name, rename_map
 
 load_dotenv()
 
-# MySQL connection details
+
 db_config = {
     'user': os.getenv('DB_USER'),
     'password': os.getenv('DB_PASSWORD'),
@@ -40,9 +40,7 @@ def fetch_data():
         print("SRC_URL is not set in the .env file.")
         return pd.DataFrame()
 
-# Fetch data
 data = fetch_data()
-print(data)
 
 # Define possible columns and their default values
 columns_with_defaults = {
@@ -58,10 +56,7 @@ for col in columns_with_defaults:
     if col not in data.columns:
         data[col] = columns_with_defaults[col]
 
-print(data)
-
 data = data[list(columns_with_defaults.keys())]
-print(data)
 
 # Convert NaN to None and ensure correct data types
 data = data.where(pd.notnull(data), None)
