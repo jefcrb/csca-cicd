@@ -185,7 +185,10 @@ def calculate_price(data, type, time=None):
     
     if data["contracttype"] == "Afname" and data["energietype"] == "Elektriciteit":
         price *= 1.06
-        price += data["groene_stroom"] + data["wkk"] + BIJZ_ACCIJNS + BIJDRAGE_ENERGIE + AANSLUITINGSVERGOEDING + afname_regio
+        try:
+            price += data["groene_stroom"] + data["wkk"] + BIJZ_ACCIJNS + BIJDRAGE_ENERGIE + AANSLUITINGSVERGOEDING + afname_regio
+        except:
+            print(f"Error with {data['productnaam']}")
 
     price = round(price, 6)
     return price
