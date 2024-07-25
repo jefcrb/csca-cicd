@@ -113,7 +113,7 @@ jobs:
 
     - name: Scan Docker image for vulnerabilities
       run: |
-        trivy image test-application:latest --severity HIGH,CRITICAL --format json --output trivy-report.json
+        trivy image test-application:latest --severity HIGH,CRITICAL --scanners vuln,misconfig,secret --format json --output trivy-report.json
 
     - name: Upload Trivy Report
       uses: actions/upload-artifact@v2
