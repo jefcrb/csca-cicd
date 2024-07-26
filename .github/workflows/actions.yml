@@ -165,18 +165,21 @@ jobs:
       run: |
         docker run -d -p 8080:8080 --name test-application test-application:latest
 
-    - name: Install OWASP ZAP
+    - name: Install dependencies
       run: |
         sudo apt-get update -y
-        sudo apt-get install -y wget openjdk-11-jdk
-        wget https://github.com/zaproxy/zaproxy/releases/download/v2.10.0/ZAP_2_10_0_unix.sh
-        sudo sh ZAP_2_10_0_unix.sh -q
+        sudo apt-get install -y wget unzip openjdk-11-jdk
+
+    - name: Download OWASP ZAP
+      run: |
+        wget https://github.com/zaproxy/zaproxy/releases/download/w2024-07-22/ZAP_WEEKLY_D-2024-07-22.zip -O zap.zip
+        unzip zap.zip -d zap
 
     - name: Run ZAP Scan
       run: |
-        /usr/local/zaproxy/zap.sh -daemon -port 8090 -config api.disablekey=true
+        zap/ZAP_2_11_0/zap.sh -daemon -port 8090 -config api.disablekey=true
         sleep 60 # Give ZAP some time to start
-        /usr/local/zaproxy/zap.sh -cmd -quickurl http://localhost:8080 -quickprogress -quickout zap-report.html
+        zap/ZAP_2_11_0/zap.sh -cmd -quickurl http://localhost:8080 -quickprogress -quickout zap-report.html
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v2
