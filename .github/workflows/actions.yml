@@ -1,4 +1,4 @@
-name: Generate SBOM and Scan Containers
+name: CI/CD pipeline
 
 on:
   push:
@@ -165,14 +165,9 @@ jobs:
       run: |
         docker-compose up -d
 
-    - name: Install OWASP ZAP
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y zaproxy
-
     - name: Run OWASP ZAP Baseline Scan
       run: |
-        zap-baseline.py -t http://localhost:5000 -r zap-report.html
+        docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:5000 -r zap-report.html
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v2

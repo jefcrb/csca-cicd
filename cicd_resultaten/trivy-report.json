@@ -1,0 +1,236 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2024-07-25T14:50:31.923706153Z",
+  "ArtifactName": "test-application:latest",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "debian",
+      "Name": "12.6"
+    },
+    "ImageID": "sha256:7cabc50905e4913b99a756c31ce8b6fdcc23a0e56ebb882a473ef6e958c368b2",
+    "DiffIDs": [
+      "sha256:e0781bc8667fb5ebf954df4ae52997f6f5568ec9f07e21e5db7c9d324ed41e1f",
+      "sha256:4e4410552731e57916564b2b612a0466d6f23336889d0aa89bd5514976077056",
+      "sha256:da6d0db38deae9943d6a8e39b821cbd7c2fff497888ecc96c57072f682286860",
+      "sha256:6e1edc42bbcc51de14fb459b45010917bcc75edb528a723ed5be6a640efc685a",
+      "sha256:337337a89bc6cfab83181b61ea40ec704dfc41992fb627849d27ff488bee8791",
+      "sha256:62cb7899d5329939a3f13e109c855de9161708f3b67e759700c0ef16c4cffd2a",
+      "sha256:13c0ea23fa9b1315411fc31a050f510e5a3dd2118806f119b328fd188de0bfcd",
+      "sha256:1cadbfc290a754540aebe1d863287aab897b3969a7714d9d1f76d690f137d11c",
+      "sha256:9a0c2c7168c34501a7776a09294b4f01fe5fa7f32be81f1d38bfc2d132b64036"
+    ],
+    "RepoTags": [
+      "test-application:latest"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2024-07-25T14:46:28.359695206Z",
+      "history": [
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:6c4730e7b12278bc7eb83b3b9d659437c92c42fc7ee70922ae8c4bebfb56a602 in / "
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"bash\"]",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "ENV LANG=C.UTF-8",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "RUN /bin/sh -c set -eux; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tca-certificates \t\tnetbase \t\ttzdata \t; \trm -rf /var/lib/apt/lists/* # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "ENV GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "ENV PYTHON_VERSION=3.9.19",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "RUN /bin/sh -c set -eux; \t\tsavedAptMark=\"$(apt-mark showmanual)\"; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tdpkg-dev \t\tgcc \t\tgnupg \t\tlibbluetooth-dev \t\tlibbz2-dev \t\tlibc6-dev \t\tlibdb-dev \t\tlibexpat1-dev \t\tlibffi-dev \t\tlibgdbm-dev \t\tliblzma-dev \t\tlibncursesw5-dev \t\tlibreadline-dev \t\tlibsqlite3-dev \t\tlibssl-dev \t\tmake \t\ttk-dev \t\tuuid-dev \t\twget \t\txz-utils \t\tzlib1g-dev \t; \t\twget -O python.tar.xz \"https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz\"; \twget -O python.tar.xz.asc \"https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc\"; \tGNUPGHOME=\"$(mktemp -d)\"; export GNUPGHOME; \tgpg --batch --keyserver hkps://keys.openpgp.org --recv-keys \"$GPG_KEY\"; \tgpg --batch --verify python.tar.xz.asc python.tar.xz; \tgpgconf --kill all; \trm -rf \"$GNUPGHOME\" python.tar.xz.asc; \tmkdir -p /usr/src/python; \ttar --extract --directory /usr/src/python --strip-components=1 --file python.tar.xz; \trm python.tar.xz; \t\tcd /usr/src/python; \tgnuArch=\"$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)\"; \t./configure \t\t--build=\"$gnuArch\" \t\t--enable-loadable-sqlite-extensions \t\t--enable-optimizations \t\t--enable-option-checking=fatal \t\t--enable-shared \t\t--with-system-expat \t\t--without-ensurepip \t; \tnproc=\"$(nproc)\"; \tEXTRA_CFLAGS=\"$(dpkg-buildflags --get CFLAGS)\"; \tLDFLAGS=\"$(dpkg-buildflags --get LDFLAGS)\"; \tLDFLAGS=\"${LDFLAGS:--Wl},--strip-all\"; \tmake -j \"$nproc\" \t\t\"EXTRA_CFLAGS=${EXTRA_CFLAGS:-}\" \t\t\"LDFLAGS=${LDFLAGS:-}\" \t\t\"PROFILE_TASK=${PROFILE_TASK:-}\" \t; \trm python; \tmake -j \"$nproc\" \t\t\"EXTRA_CFLAGS=${EXTRA_CFLAGS:-}\" \t\t\"LDFLAGS=${LDFLAGS:--Wl},-rpath='\\$\\$ORIGIN/../lib'\" \t\t\"PROFILE_TASK=${PROFILE_TASK:-}\" \t\tpython \t; \tmake install; \t\tcd /; \trm -rf /usr/src/python; \t\tfind /usr/local -depth \t\t\\( \t\t\t\\( -type d -a \\( -name test -o -name tests -o -name idle_test \\) \\) \t\t\t-o \\( -type f -a \\( -name '*.pyc' -o -name '*.pyo' -o -name 'libpython*.a' \\) \\) \t\t\\) -exec rm -rf '{}' + \t; \t\tldconfig; \t\tapt-mark auto '.*' \u003e /dev/null; \tapt-mark manual $savedAptMark; \tfind /usr/local -type f -executable -not \\( -name '*tkinter*' \\) -exec ldd '{}' ';' \t\t| awk '/=\u003e/ { so = $(NF-1); if (index(so, \"/usr/local/\") == 1) { next }; gsub(\"^/(usr/)?\", \"\", so); printf \"*%s\\n\", so }' \t\t| sort -u \t\t| xargs -r dpkg-query --search \t\t| cut -d: -f1 \t\t| sort -u \t\t| xargs -r apt-mark manual \t; \tapt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \trm -rf /var/lib/apt/lists/*; \t\tpython3 --version # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "RUN /bin/sh -c set -eux; \tfor src in idle3 pydoc3 python3 python3-config; do \t\tdst=\"$(echo \"$src\" | tr -d 3)\"; \t\t[ -s \"/usr/local/bin/$src\" ]; \t\t[ ! -e \"/usr/local/bin/$dst\" ]; \t\tln -svT \"$src\" \"/usr/local/bin/$dst\"; \tdone # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "ENV PYTHON_PIP_VERSION=23.0.1",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "ENV PYTHON_SETUPTOOLS_VERSION=58.1.0",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "ENV PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/e03e1607ad60522cf34a92e834138eb89f57667c/public/get-pip.py",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "ENV PYTHON_GET_PIP_SHA256=ee09098395e42eb1f82ef4acb231a767a6ae85504a9cf9983223df0a7cbd35d7",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "RUN /bin/sh -c set -eux; \t\tsavedAptMark=\"$(apt-mark showmanual)\"; \tapt-get update; \tapt-get install -y --no-install-recommends wget; \t\twget -O get-pip.py \"$PYTHON_GET_PIP_URL\"; \techo \"$PYTHON_GET_PIP_SHA256 *get-pip.py\" | sha256sum -c -; \t\tapt-mark auto '.*' \u003e /dev/null; \t[ -z \"$savedAptMark\" ] || apt-mark manual $savedAptMark \u003e /dev/null; \tapt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \trm -rf /var/lib/apt/lists/*; \t\texport PYTHONDONTWRITEBYTECODE=1; \t\tpython get-pip.py \t\t--disable-pip-version-check \t\t--no-cache-dir \t\t--no-compile \t\t\"pip==$PYTHON_PIP_VERSION\" \t\t\"setuptools==$PYTHON_SETUPTOOLS_VERSION\" \t; \trm -f get-pip.py; \t\tpip --version # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2024-07-08T02:10:08Z",
+          "created_by": "CMD [\"python3\"]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-25T14:46:06Z",
+          "created_by": "WORKDIR /app",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2024-07-25T14:46:06Z",
+          "created_by": "COPY requirements.txt requirements.txt # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2024-07-25T14:46:28Z",
+          "created_by": "RUN /bin/sh -c pip install -r requirements.txt # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2024-07-25T14:46:28Z",
+          "created_by": "COPY . . # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2024-07-25T14:46:28Z",
+          "created_by": "ENV PYTHONPATH=/app",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2024-07-25T14:46:28Z",
+          "created_by": "CMD [\"python\" \"run.py\"]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:e0781bc8667fb5ebf954df4ae52997f6f5568ec9f07e21e5db7c9d324ed41e1f",
+          "sha256:4e4410552731e57916564b2b612a0466d6f23336889d0aa89bd5514976077056",
+          "sha256:da6d0db38deae9943d6a8e39b821cbd7c2fff497888ecc96c57072f682286860",
+          "sha256:6e1edc42bbcc51de14fb459b45010917bcc75edb528a723ed5be6a640efc685a",
+          "sha256:337337a89bc6cfab83181b61ea40ec704dfc41992fb627849d27ff488bee8791",
+          "sha256:62cb7899d5329939a3f13e109c855de9161708f3b67e759700c0ef16c4cffd2a",
+          "sha256:13c0ea23fa9b1315411fc31a050f510e5a3dd2118806f119b328fd188de0bfcd",
+          "sha256:1cadbfc290a754540aebe1d863287aab897b3969a7714d9d1f76d690f137d11c",
+          "sha256:9a0c2c7168c34501a7776a09294b4f01fe5fa7f32be81f1d38bfc2d132b64036"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "python",
+          "run.py"
+        ],
+        "Env": [
+          "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "LANG=C.UTF-8",
+          "GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568",
+          "PYTHON_VERSION=3.9.19",
+          "PYTHON_PIP_VERSION=23.0.1",
+          "PYTHON_SETUPTOOLS_VERSION=58.1.0",
+          "PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/e03e1607ad60522cf34a92e834138eb89f57667c/public/get-pip.py",
+          "PYTHON_GET_PIP_SHA256=ee09098395e42eb1f82ef4acb231a767a6ae85504a9cf9983223df0a7cbd35d7",
+          "PYTHONPATH=/app"
+        ],
+        "WorkingDir": "/app",
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "/app/.env",
+      "Class": "secret",
+      "Secrets": [
+        {
+          "RuleID": "github-app-token",
+          "Category": "GitHub",
+          "Severity": "CRITICAL",
+          "Title": "GitHub App Token",
+          "StartLine": 11,
+          "EndLine": 11,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 9,
+                "Content": "ENTSOE_API_URL=https://web-api.tp.entsoe.eu/api?documentType=A44\u0026in_Domain=10YBE----------2\u0026out_Domain=10YBE----------2\u0026",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "ENTSOE_API_URL=https://web-api.tp.entsoe.eu/api?documentType=A44\u0026in_Domain=10YBE----------2\u0026out_Domain=10YBE----------2\u0026",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 10,
+                "Content": "",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 11,
+                "Content": "GITHUB_APP_TOKEN=****************************************UVWX",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "GITHUB_APP_TOKEN=****************************************UVWX",
+                "FirstCause": true,
+                "LastCause": true
+              }
+            ]
+          },
+          "Match": "GITHUB_APP_TOKEN=****************************************UVWX",
+          "Layer": {
+            "DiffID": "sha256:9a0c2c7168c34501a7776a09294b4f01fe5fa7f32be81f1d38bfc2d132b64036",
+            "CreatedBy": "COPY . . # buildkit"
+          }
+        }
+      ]
+    }
+  ]
+}
