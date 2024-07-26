@@ -151,14 +151,30 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Download Docker image
+      uses: actions/download-artifact@v2
+      with:
+        name: docker-image
+        path: .
+
+    - name: Load Docker image
+      run: |
+        docker load -i test-application.tar
+
+    - name: Start Docker Compose
+      run: |
+        docker-compose up -d
+
     - name: Install OWASP ZAP
       run: |
-        sudo apt-get update -y
-        sudo apt-get install -y owasp-zap
+        sudo apt update -y
+        sudo apt install default-jre -y
+        sudo apt install snapd -y
+        sudo snap install zaproxy --classic
 
-    - name: Run OWASP ZAP baseline scan
+    - name: Run OWASP ZAP Baseline Scan
       run: |
-        zap-baseline.py -t http://localhost -r zap-report.html
+        zap-baseline.py -t http://localhost:5000 -r zap-report.html
 
     - name: Upload ZAP Report
       uses: actions/upload-artifact@v2
