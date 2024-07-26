@@ -120,3 +120,24 @@ jobs:
       with:
         name: trivy-report
         path: trivy-report.json
+  sast-scan:
+    runs-on: ubuntu-latest
+    needs: generate-sbom
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Semgrep
+      run: |
+        python3 -m pip install semgrep
+
+    - name: Run Semgrep
+      run: |
+        semgrep --config p/ci > semgrep-report.txt
+
+    - name: Upload Semgrep Report
+      uses: actions/upload-artifact@v2
+      with:
+        name: semgrep-report
+        path: semgrep-report.txt
