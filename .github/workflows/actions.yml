@@ -9,7 +9,31 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: none
+
 jobs:
+  hashicorp:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Pull HashiCorp Vault Docker image
+      run: docker pull jefcrb/hashicorp_vault_csca
+
+    - name: Run Vault container
+      run: docker run -d --name vault -p 8200:8200 jefcrb/hashicorp_vault_csca
+
+    - name: Wait for Vault to start
+      run: sleep 10
+
+    - name: Print secret from Vault
+      run: |
+        docker exec vault vault kv get -format=json secret/my-secret | jq -r .data.data.password
+
   generate-sbom:
     runs-on: ubuntu-latest
 
