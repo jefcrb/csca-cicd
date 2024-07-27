@@ -30,11 +30,21 @@ jobs:
     - name: Wait for Vault to start
       run: sleep 10
 
-    - name: Print secret from Vault
+    - name: Get Vault root token
+      id: vault-token
       run: |
+        TOKEN=$(docker logs vault 2>&1 | grep 'Root Token:' | awk '{print $3}')
+        echo "VAULT_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+    - name: Print secret from Vault
+      env:
+        VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
+      run: |
+        docker exec vault vault login $VAULT_TOKEN
         docker exec vault vault kv get -format=json secret/my-secret | jq -r .data.data.password
 
   generate-sbom:
+    needs: hashicorp
     runs-on: ubuntu-latest
 
     steps:
