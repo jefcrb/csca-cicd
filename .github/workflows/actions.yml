@@ -41,7 +41,7 @@ jobs:
         VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
       run: |
         docker exec vault vault login $VAULT_TOKEN
-        docker exec vault vault kv get -format=json secret/my-secret | jq -r .data.data.password
+        docker exec vault vault kv get -format=json secret/my-secret
 
   generate-sbom:
     needs: hashicorp
